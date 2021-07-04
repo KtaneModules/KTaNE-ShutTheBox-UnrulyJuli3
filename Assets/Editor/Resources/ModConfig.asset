@@ -14,10 +14,8 @@ MonoBehaviour:
   id: ShutTheBox
   title: Shut-the-Box
   author: TheDarkSid3r
-  description: '[Submission for KTaNE Modding Jam]
-
-
-    Flip tiles that add up to the sums of your dice rolls.'
+  description: "[Made for the KTaNE Modding Jam #1]\r\n\r\nFlip tiles that add up
+    to the sums of your dice rolls."
   version: 1.0
   outputFolder: D:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody
     Explodes\mods
