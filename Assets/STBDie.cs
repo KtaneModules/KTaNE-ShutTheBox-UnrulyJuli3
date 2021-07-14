@@ -36,11 +36,11 @@ public class STBDie : MonoBehaviour
 	private IEnumerator DoRoll(int result, KMAudio audio)
 	{
 		isRolling = true;
-		DieAnimator.SetTrigger("Roll");
+		DieAnimator.SetBool("Rolling", true);
 		yield return new WaitForSecondsRealtime(Random.Range(0.5f, 2f));
 		DieTransform.localRotation = Quaternion.Euler(DieRotations[result]);
 		audio.PlaySoundAtTransform("kf_hrollers_give_die", DieTransform);
-		DieAnimator.SetTrigger("Select");
+		DieAnimator.SetBool("Rolling", false);
 		isRolling = false;
 	}
 }

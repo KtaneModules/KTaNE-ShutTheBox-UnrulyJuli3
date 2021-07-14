@@ -73,7 +73,7 @@ public class STBModule : MonoBehaviour
 		};
 	}
 
-	private void SelectTile(STBTile tile, bool forceSelect = false)
+	private bool SelectTile(STBTile tile, bool forceSelect = false)
 	{
 		if (CanInteract && (isChoosingTileSum || forceSelect) && !tile.isDown)
 		{
@@ -83,12 +83,14 @@ public class STBModule : MonoBehaviour
 			tile.Flip(true);
 
 			HandleTile(tile.number, forceSelect);
+			return true;
 		}
+		return false;
 	}
 
-	private void SelectTile(int tileNum, bool forceSelect = false)
+	private bool SelectTile(int tileNum, bool forceSelect = false)
 	{
-		SelectTile(Tiles[tileNum - 1], forceSelect);
+		return SelectTile(Tiles[tileNum - 1], forceSelect);
 	}
 
 	private void HandleTile(int num, bool forceSelect)
@@ -128,9 +130,19 @@ public class STBModule : MonoBehaviour
 	private bool canRollDice;
 	private bool canReset = true;
 
+	private bool RollResult()
+	{
+		if (CanInteract && canRollDice)
+		{
+			StartCoroutine(RollDice());
+			return true;
+		}
+		return false;
+	}
+
 	private bool Roll()
 	{
-		if (CanInteract && canRollDice) StartCoroutine(RollDice());
+		RollResult();
 		return false;
 	}
 
@@ -163,7 +175,7 @@ public class STBModule : MonoBehaviour
 		canReset = true;
 		ResetButtonAnimator.SetBool("IsHidden", false);
 
-		yield return new WaitForSecondsRealtime(1.5f);
+		//yield return new WaitForSecondsRealtime(1.5f);
 
 		SetCanRollDice(true);
 
@@ -172,19 +184,25 @@ public class STBModule : MonoBehaviour
 		currentTileSum = 0;
 	}
 
-	private bool Reset()
+	private bool ResetResult()
 	{
 		if (CanInteract)
 		{
 			ResetButton.AddInteractionPunch();
 			Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, ResetButton.transform);
 
-			ResetRaw();
+			return ResetRaw();
 		}
 		return false;
 	}
 
-	private void ResetRaw()
+	private bool Reset()
+	{
+		ResetResult();
+		return false;
+	}
+
+	private bool ResetRaw()
 	{
 		if (canReset)
 		{
@@ -193,7 +211,9 @@ public class STBModule : MonoBehaviour
 			else RollButtonAnimator.SetBool("IsWaiting", true);
 			currentTileSum = 0;
 			foreach (STBTile tile in Tiles) tile.Flip(false);
+			return true;
 		}
+		return false;
 	}
 
 	private void Solve()
@@ -222,17 +242,16 @@ public class STBModule : MonoBehaviour
 		switch (split[0])
 		{
 			case "roll":
-				Roll();
-				yield return null;
+				if (RollResult()) yield return null;
 				break;
 			case "reset":
-				Reset();
-				yield return null;
+				if (ResetResult()) yield return null;
 				break;
 			case "flip":
 			case "tile":
 			case "tiles":
 			case "t":
+				bool didHandle = false;
 				if (split.Length > 1)
 				{
 					foreach (char tileChar in split.Skip(1).Join("").Where(char.IsDigit).ToArray())
@@ -241,10 +260,11 @@ public class STBModule : MonoBehaviour
 						if (int.TryParse(tileChar.ToString(), out tileNum))
 						{
 							if (tileNum < 1 || tileNum > 9) yield return string.Format("sendtochaterror Tile number \"{0}\" is invalid.", tileNum);
-							else SelectTile(tileNum);
+							else if (SelectTile(tileNum)) didHandle = true;
 						}
 					}
 				}
+				if (didHandle) yield return null;
 				break;
 		}
 	}

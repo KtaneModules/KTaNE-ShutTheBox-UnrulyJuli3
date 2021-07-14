@@ -16,7 +16,7 @@ MonoBehaviour:
   author: TheDarkSid3r
   description: "[Made for the KTaNE Modding Jam #1]\r\n\r\nFlip tiles that add up
     to the sums of your dice rolls."
-  version: 1.0
+  version: 1.2
   outputFolder: D:\Program Files (x86)\Steam\steamapps\common\Keep Talking and Nobody
     Explodes\mods
   previewImage: {fileID: 2800000, guid: 4e1b4540235cefc41854acdb87dd621d, type: 3}
